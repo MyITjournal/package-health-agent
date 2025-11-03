@@ -1,48 +1,105 @@
-# Package Version Health Monitor Agent
+# Package Health Monitor Agent
 
-An A2A (Agent-to-Agent) Protocol AI Agent built with Python and FastAPI that monitors package dependencies for security vulnerabilities, outdated versions and deprecated packages.
+An **A2A (Agent-to-Agent) Protocol** AI Agent built with Python and FastAPI that monitors package dependencies for security vulnerabilities, outdated versions, and deprecated packages. Designed for Telex integration with natural language processing capabilities.
 
 ## Features
 
-- Parse `requirements.txt` (Python) and `package.json` (npm) files
-- Check latest versions from PyPI and npm registries
-- Identify security vulnerabilities using OSV (Open Source Vulnerabilities) database
-- Detect deprecated packages
-- Calculate health scores for each dependency
-- Provide actionable recommendations
-- RESTful API endpoints for easy integration
+- **A2A Protocol Support** - Native Telex integration with conversational interface
+- **Multi-Language Support** - Analyze Python (PyPI) and JavaScript/Node.js (npm) packages
+- **Security Scanning** - Check for vulnerabilities using OSV (Open Source Vulnerabilities) database
+- **Health Scoring** - Calculate health scores (0-100) for each dependency
+- **Smart Recommendations** - Get actionable advice for package updates
+- **Natural Language** - Ask questions like "Check flask==2.0.1, requests==2.25.0"
+- **RESTful API** - Traditional REST endpoints for direct integration
 
-## Installation
+## Quick Start
 
-1. Install dependencies:
+### Installation
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/MyITjournal/package-health-agent.git
+cd package-health-agent
+```
+
+2. **Install dependencies:**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Run the server:
+3. **Run the server:**
 
 ```bash
-python main.py
+python main_a2a.py
 ```
 
-Or using uvicorn directly:
+Or using uvicorn:
 
 ```bash
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main_a2a:app --reload --host 0.0.0.0 --port 8000
 ```
+
+4. **Access the API:**
+
+- **API Documentation:** http://localhost:8000/docs
+- **Health Check:** http://localhost:8000/health
+- **A2A Endpoint:** http://localhost:8000/a2a
+
+## Live Deployment
+
+**Production URL:** `https://packagehealthmonitoragent-2367cacc569a.herokuapp.com/`
+
+**Interactive Docs:** `https://packagehealthmonitoragent-2367cacc569a.herokuapp.com/docs`
 
 ## API Endpoints
 
-### 1. Root Endpoint
+### 1. A2A Protocol Endpoint (Telex Integration)
+
+```
+POST /a2a
+Content-Type: application/json
+```
+
+**For Telex/A2A clients** - Supports conversational package health checks.
+
+**Example Request:**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "1",
+  "method": "message/send",
+  "params": {
+    "message": {
+      "role": "user",
+      "parts": [
+        {
+          "kind": "text",
+          "text": "Check flask==2.0.1, requests==2.25.0"
+        }
+      ]
+    }
+  }
+}
+```
+
+**Natural Language Commands:**
+
+- "help" - Show available commands
+- "Check flask==2.0.1, requests>=2.25.0" - Analyze Python packages
+- "Analyze npm: express@4.17.1, axios@0.21.1" - Analyze npm packages
+
+### 2. Root Endpoint
 
 ```
 GET /
 ```
 
-Returns API information and available endpoints.
+Returns API information, version, and available endpoints.
 
-### 2. Health Check
+### 3. Health Check
 
 ```
 GET /health
@@ -50,7 +107,7 @@ GET /health
 
 Check if the API is running.
 
-### 3. Analyze Python Dependencies
+### 4. Analyze Python Dependencies
 
 ```
 POST /analyze/python
@@ -85,7 +142,7 @@ $body = @{
 Invoke-WebRequest -Uri http://localhost:8000/analyze/python -Method POST -Body $body -ContentType "application/json"
 ```
 
-### 4. Analyze npm Dependencies
+### 5. Analyze npm Dependencies
 
 ```
 POST /analyze/npm
@@ -133,7 +190,7 @@ $body = @{
 Invoke-WebRequest -Uri http://localhost:8000/analyze/npm -Method POST -Body $body -ContentType "application/json"
 ```
 
-### 5. Check Single Package
+### 6. Check Single Package
 
 ```
 POST /check-package?ecosystem=python
@@ -146,6 +203,8 @@ Content-Type: application/json
 ```
 
 ## Response Format
+
+**Successful Analysis:**
 
 ```json
 {
@@ -173,6 +232,8 @@ Content-Type: application/json
 
 ## Health Score Calculation
 
+The health score ranges from **0-100** based on these factors:
+
 - **100**: Perfect health - up-to-date, no vulnerabilities
 - **80**: Outdated version (-20 points)
 - **50-0**: Has vulnerabilities (-15 points per vulnerability, max -50)
@@ -180,37 +241,143 @@ Content-Type: application/json
 
 ## Testing
 
-Sample files are included:
+Sample test files are included in the repository:
 
-- `sample_requirements.txt` - Python dependencies
-- `sample_package.json` - npm dependencies
+- `sample_requirements.txt` - Example Python dependencies
+- `sample_package.json` - Example npm dependencies
+- `test_a2a.py` - A2A protocol test script
 
-Test with PowerShell:
+**Run A2A Tests:**
+
+```bash
+python test_a2a.py
+```
+
+**Test with PowerShell:**
 
 ```powershell
-# Test Python dependencies
-$content = Get-Content sample_requirements.txt -Raw
-Invoke-WebRequest -Uri http://localhost:8000/analyze/python -Method POST -Body (ConvertTo-Json $content) -ContentType "application/json"
+# Test Python package analysis
+$body = @{
+    packages = @("flask==2.0.1", "requests==2.25.0", "numpy==1.19.0")
+} | ConvertTo-Json
 
-# Test npm dependencies
-$content = Get-Content sample_package.json -Raw
-Invoke-WebRequest -Uri http://localhost:8000/analyze/npm -Method POST -Body (ConvertTo-Json $content) -ContentType "application/json"
+Invoke-WebRequest -Uri http://localhost:8000/analyze/python -Method POST -Body $body -ContentType "application/json"
+
+# Test npm package analysis
+$body = @{
+    dependencies = @{
+        express = "^4.17.1"
+        axios = "^0.21.1"
+    }
+} | ConvertTo-Json
+
+Invoke-WebRequest -Uri http://localhost:8000/analyze/npm -Method POST -Body $body -ContentType "application/json"
 ```
 
 ## Architecture
 
-- **FastAPI**: Modern, fast web framework for building APIs
-- **OSV API**: Open Source Vulnerabilities database for security checks
-- **PyPI API**: Python Package Index for version checking
-- **npm Registry API**: npm package registry for JavaScript packages
+**Tech Stack:**
+
+- **FastAPI** - Modern, fast web framework for building APIs
+- **Pydantic** - Data validation using Python type annotations
+- **A2A Protocol** - Agent-to-Agent communication standard
+- **OSV API** - Open Source Vulnerabilities database for security checks
+- **PyPI API** - Python Package Index for version checking
+- **npm Registry API** - npm package registry for JavaScript packages
+
+**Project Structure:**
+
+```
+package-health-agent/
+├── main_a2a.py           # Main FastAPI application with A2A support
+├── a2a_handler.py        # A2A protocol message handler
+├── models/
+│   ├── __init__.py
+│   ├── a2a.py           # A2A protocol models
+│   └── schemas.py       # API request/response models
+├── test_a2a.py          # A2A endpoint tests
+├── pyproject.toml       # Project metadata and dependencies
+├── requirements.txt     # Dependencies (for Heroku)
+├── Procfile            # Heroku deployment config
+└── README.md           # This file
+```
 
 ## Use Cases
 
-1. **CI/CD Integration**: Add to your pipeline to block deployments with vulnerable dependencies
-2. **Weekly Reports**: Schedule automated dependency health reports
-3. **Developer Tools**: Integrate into IDEs or development workflows
-4. **Security Audits**: Quick security assessment of project dependencies
+1. **Telex Integration** - Use as a conversational agent in Telex workspace
+2. **CI/CD Integration** - Add to your pipeline to block deployments with vulnerable dependencies
+3. **Weekly Reports** - Schedule automated dependency health reports
+4. **Developer Tools** - Integrate into IDEs or development workflows
+5. **Security Audits** - Quick security assessment of project dependencies
+
+## Deployment
+
+### Deploy to Heroku
+
+1. **Create Heroku app:**
+
+```bash
+heroku create your-app-name
+```
+
+2. **Set Python version:**
+
+```bash
+echo "3.13" > .python-version
+```
+
+3. **Deploy:**
+
+```bash
+git push heroku main
+```
+
+4. **Verify:**
+
+```bash
+heroku logs --tail
+```
+
+### Environment Variables
+
+No environment variables required for basic operation. All APIs used are public and free.
+
+## Telex Integration
+
+To register this agent on Telex, use this configuration:
+
+```json
+{
+  "name": "Package Health Monitor",
+  "description": "Monitors package dependencies for security and health issues",
+  "url": "https://packagehealthmonitoragent-2367cacc569a.herokuapp.com/a2a",
+  "protocol": "A2A",
+  "version": "1.0.0"
+}
+```
+
+**Example Telex Commands:**
+
+- "help" - Show what the agent can do
+- "Check flask==2.0.1, requests==2.25.0" - Analyze Python packages
+- "Analyze npm: express@4.17.1" - Check npm packages
 
 ## License
 
 MIT License
+
+## Author
+
+**Adeyoola Adebayo**  
+GitHub: [@MyITjournal](https://github.com/MyITjournal)
+
+## Acknowledgments
+
+- FastAPI for the excellent web framework
+- OSV for the vulnerabilities database
+- Telex for A2A protocol specification
+
+---
+
+**Live API:** https://packagehealthmonitoragent-2367cacc569a.herokuapp.com/  
+**Documentation:** https://packagehealthmonitoragent-2367cacc569a.herokuapp.com/docs

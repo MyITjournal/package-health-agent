@@ -1,0 +1,15 @@
+[project]
+name = "package-health-agent"
+version = "1.0.0"
+description = "An A2A Protocol Agent that monitors package health and security vulnerabilities"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi==0.115.5",
+    "uvicorn==0.32.1",
+    "requests==2.32.3",
+    "pydantic==2.10.3",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"

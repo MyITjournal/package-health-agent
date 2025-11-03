@@ -1,51 +1,24 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 from typing import List, Dict, Optional, Any
 from datetime import datetime
 import requests
 from models.a2a import JSONRPCRequest, JSONRPCResponse
+from models.schemas import (
+    PackageDependency,
+    PythonDependenciesRequest,
+    NpmDependenciesRequest,
+    PackageHealthResponse,
+    OverallHealthResponse
+)
 from a2a_handler import A2AHandler
 
+# Initializing the api
 app = FastAPI(
     title="Package Health Monitor Agent (A2A)",
     description="An A2A Protocol Agent that monitors package health and security",
     version="1.0.0"
 )
-
-# Models for direct API access
-class PythonDependenciesRequest(BaseModel):
-    """Request model for Python dependencies"""
-    packages: List[str]
-
-class NpmDependenciesRequest(BaseModel):
-    """Request model for npm dependencies"""
-    dependencies: Optional[Dict[str, str]] = {}
-    devDependencies: Optional[Dict[str, str]] = {}
-
-class PackageDependency(BaseModel):
-    name: str
-    version: Optional[str] = None
-
-class PackageHealthResponse(BaseModel):
-    name: str
-    current_version: Optional[str]
-    latest_version: Optional[str]
-    is_outdated: bool
-    has_vulnerabilities: bool
-    vulnerability_count: int
-    is_deprecated: bool
-    health_score: int
-    recommendation: str
-    vulnerabilities: List[Dict]
-
-class OverallHealthResponse(BaseModel):
-    total_packages: int
-    outdated_count: int
-    vulnerable_count: int
-    deprecated_count: int
-    overall_health_score: int
-    packages: List[PackageHealthResponse]
 
 # Package checking class
 class PackageChecker:

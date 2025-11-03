@@ -1,3 +1,5 @@
+# This file is auto-generated from pyproject.toml for Heroku compatibility
+# To update: pip install -e . then pip freeze > requirements.txt
 fastapi==0.115.5
 uvicorn==0.32.1
 requests==2.32.3

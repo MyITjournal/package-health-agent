@@ -1,6 +1,8 @@
 {
   "name": "sample-project",
   "version": "1.0.0",
+  "description": "A package dependencies monitor with A2A protocol support",
+  "requires-python": ">=3.13",
   "dependencies": {
     "express": "4.17.1",
     "axios": "0.21.0",
