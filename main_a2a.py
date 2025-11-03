@@ -330,6 +330,45 @@ async def analyze_npm_dependencies(request: NpmDependenciesRequest):
     
     return OverallHealthResponse(**result)
 
+@app.post("/check-package", response_model=PackageHealthResponse)
+async def check_single_package(package: PackageDependency, ecosystem: str):
+    """
+    Check a single package health
+    
+    Args:
+        package: PackageDependency with name and version
+        ecosystem: "python" or "npm"
+    """
+    if ecosystem not in ["python", "npm"]:
+        raise HTTPException(status_code=400, detail="Ecosystem must be 'python' or 'npm'")
+    
+    if ecosystem == "python":
+        pkg_info = check_pypi_package(package.name, package.version)
+    else:
+        pkg_info = check_npm_package(package.name, package.version)
+    
+    vulnerabilities = check_vulnerabilities_osv(package.name, ecosystem)
+    
+    is_outdated = pkg_info.get('is_outdated', False)
+    has_vulns = len(vulnerabilities) > 0
+    is_deprecated = pkg_info.get('deprecated', False)
+    
+    health_score = calculate_health_score(is_outdated, len(vulnerabilities), is_deprecated)
+    recommendation = get_recommendation(health_score, is_outdated, len(vulnerabilities), is_deprecated)
+    
+    return PackageHealthResponse(
+        name=package.name,
+        current_version=package.version,
+        latest_version=pkg_info.get('latest_version'),
+        is_outdated=is_outdated,
+        has_vulnerabilities=has_vulns,
+        vulnerability_count=len(vulnerabilities),
+        is_deprecated=is_deprecated,
+        health_score=health_score,
+        recommendation=recommendation,
+        vulnerabilities=vulnerabilities
+    )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
