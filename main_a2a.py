@@ -280,7 +280,7 @@ async def a2a_endpoint(request: Request):
         except Exception as e:
             logger.error(f"JSON parse error: {e}")
             return JSONResponse(
-                status_code=400,
+                status_code=200,  # JSON-RPC 2.0: Always return 200, error in body
                 content={
                     "jsonrpc": "2.0",
                     "id": None,
@@ -310,7 +310,7 @@ async def a2a_endpoint(request: Request):
         if body.get("jsonrpc") != "2.0":
             logger.warning(f"Invalid jsonrpc version: {body.get('jsonrpc')}")
             return JSONResponse(
-                status_code=400,
+                status_code=200,  # JSON-RPC 2.0: Always return 200
                 content={
                     "jsonrpc": "2.0",
                     "id": request_id,
@@ -325,7 +325,7 @@ async def a2a_endpoint(request: Request):
         if not request_id:
             logger.warning("Missing request id")
             return JSONResponse(
-                status_code=400,
+                status_code=200,  # JSON-RPC 2.0: Always return 200
                 content={
                     "jsonrpc": "2.0",
                     "id": None,
@@ -343,7 +343,7 @@ async def a2a_endpoint(request: Request):
         except Exception as e:
             logger.error(f"Pydantic validation error: {e}")
             return JSONResponse(
-                status_code=400,
+                status_code=200,  # JSON-RPC 2.0: Always return 200
                 content={
                     "jsonrpc": "2.0",
                     "id": request_id,
@@ -367,7 +367,7 @@ async def a2a_endpoint(request: Request):
     except Exception as e:
         logger.exception(f"Internal error in A2A endpoint: {e}")
         return JSONResponse(
-            status_code=500,
+            status_code=200,  # JSON-RPC 2.0: Always return 200, even for internal errors
             content={
                 "jsonrpc": "2.0",
                 "id": request_id,
