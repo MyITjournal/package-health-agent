@@ -41,9 +41,15 @@ class A2AHandler:
                     -32601,
                     f"Method not found: {request.method}"
                 )
+        except AttributeError as e:
+            return self._error_response(
+                getattr(request, 'id', 'unknown'),
+                -32602,
+                f"Invalid params: {str(e)}"
+            )
         except Exception as e:
             return self._error_response(
-                request.id,
+                getattr(request, 'id', 'unknown'),
                 -32603,
                 f"Internal error: {str(e)}"
             )
