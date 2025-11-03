@@ -167,6 +167,8 @@ def check_pypi_package(package_name: str, current_version: Optional[str]) -> Dic
             latest_version = data['info']['version']
             is_outdated = current_version and current_version != latest_version
             
+            logger.info(f"PyPI check: {package_name} - latest: {latest_version}, current: {current_version}, outdated: {is_outdated}")
+            
             return {
                 'latest_version': latest_version,
                 'is_outdated': is_outdated,
@@ -187,6 +189,8 @@ def check_npm_package(package_name: str, current_version: Optional[str]) -> Dict
             data = response.json()
             latest_version = data['dist-tags']['latest']
             is_outdated = current_version and current_version != latest_version
+            
+            logger.info(f"npm check: {package_name} - latest: {latest_version}, current: {current_version}, outdated: {is_outdated}")
             
             return {
                 'latest_version': latest_version,
@@ -427,12 +431,16 @@ async def check_single_package(package: PackageDependency, ecosystem: str = Quer
         package: PackageDependency with name and version
         ecosystem: "python" or "npm" (query parameter)
     """
+    logger.info(f"check_single_package called - package: {package.name}, version: {package.version}, ecosystem: {ecosystem}")
+    
     if ecosystem not in ["python", "npm"]:
         raise HTTPException(status_code=400, detail="Ecosystem must be 'python' or 'npm'")
     
     if ecosystem == "python":
+        logger.info(f"Checking PyPI for {package.name}")
         pkg_info = check_pypi_package(package.name, package.version)
     else:
+        logger.info(f"Checking npm for {package.name}")
         pkg_info = check_npm_package(package.name, package.version)
     
     vulnerabilities = check_vulnerabilities_osv(package.name, ecosystem)
