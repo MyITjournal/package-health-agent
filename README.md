@@ -1,16 +1,16 @@
 # Package Version Health Monitor Agent
 
-An A2A (Agent-to-Agent) Protocol AI Agent built with Python and FastAPI that monitors package dependencies for security vulnerabilities, outdated versions, pythonand deprecated packages.
+An A2A (Agent-to-Agent) Protocol AI Agent built with Python and FastAPI that monitors package dependencies for security vulnerabilities, outdated versions and deprecated packages.
 
 ## Features
 
-- ✅ Parse `requirements.txt` (Python) and `package.json` (npm) files
-- ✅ Check latest versions from PyPI and npm registries
-- ✅ Identify security vulnerabilities using OSV (Open Source Vulnerabilities) database
-- ✅ Detect deprecated packages
-- ✅ Calculate health scores for each dependency
-- ✅ Provide actionable recommendations
-- ✅ RESTful API endpoints for easy integration
+- Parse `requirements.txt` (Python) and `package.json` (npm) files
+- Check latest versions from PyPI and npm registries
+- Identify security vulnerabilities using OSV (Open Source Vulnerabilities) database
+- Detect deprecated packages
+- Calculate health scores for each dependency
+- Provide actionable recommendations
+- RESTful API endpoints for easy integration
 
 ## Installation
 
@@ -58,17 +58,15 @@ Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
-  "packages": [
-    "flask==2.0.1",
-    "requests>=2.25.0",
-    "numpy==1.19.0"
-  ]
+  "packages": ["flask==2.0.1", "requests>=2.25.0", "numpy==1.19.0"]
 }
 ```
 
 **Example with curl:**
+
 ```bash
 curl -X POST "http://localhost:8000/analyze/python" \
   -H "Content-Type: application/json" \
@@ -78,6 +76,7 @@ curl -X POST "http://localhost:8000/analyze/python" \
 ```
 
 **Example with PowerShell:**
+
 ```powershell
 $body = @{
     packages = @("flask==2.0.1", "requests==2.25.0", "numpy==1.19.0")
@@ -94,6 +93,7 @@ Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "dependencies": {
@@ -107,6 +107,7 @@ Content-Type: application/json
 ```
 
 **Example with curl:**
+
 ```bash
 curl -X POST "http://localhost:8000/analyze/npm" \
   -H "Content-Type: application/json" \
@@ -117,6 +118,7 @@ curl -X POST "http://localhost:8000/analyze/npm" \
 ```
 
 **Example with PowerShell:**
+
 ```powershell
 $body = @{
     dependencies = @{
