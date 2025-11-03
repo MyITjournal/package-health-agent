@@ -7,7 +7,7 @@ class MessagePart(BaseModel):
     """A2A Protocol message part - can be text, data, or file"""
     model_config = ConfigDict(extra='allow')
     
-    kind: Literal["text", "data", "file"]
+    kind: str  # Accept any string for flexibility with Telex
     text: Optional[str] = None
     data: Optional[Dict[str, Any]] = None
     file_url: Optional[str] = None

@@ -9,13 +9,13 @@ class PackageDependency(BaseModel):
 
 class PythonDependenciesRequest(BaseModel):
     """Request model for Python dependencies - mimics requirements.txt structure"""
-    packages: List[str]  # e.g., ["flask==2.0.1", "requests>=2.25.0", "numpy"]
+    packages: List[str] = []  # e.g., ["flask==2.0.1", "requests>=2.25.0", "numpy"]
 
 
 class NpmDependenciesRequest(BaseModel):
     """Request model for npm dependencies - mimics package.json structure"""
-    dependencies: Optional[Dict[str, str]] = {}
-    devDependencies: Optional[Dict[str, str]] = {}
+    dependencies: Optional[Dict[str, str]] = None
+    devDependencies: Optional[Dict[str, str]] = None
 
 
 class PackageHealthResponse(BaseModel):

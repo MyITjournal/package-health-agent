@@ -414,7 +414,7 @@ async def analyze_python_dependencies(request: PythonDependenciesRequest):
 @app.post("/analyze/npm", response_model=OverallHealthResponse)
 async def analyze_npm_dependencies(request: NpmDependenciesRequest):
     """Analyze npm dependencies"""
-    all_deps = {**request.dependencies, **(request.devDependencies or {})}
+    all_deps = {**(request.dependencies or {}), **(request.devDependencies or {})}
     result = await package_checker.analyze_npm(all_deps)
     
     if not result:

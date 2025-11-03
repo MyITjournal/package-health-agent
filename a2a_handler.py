@@ -213,24 +213,27 @@ class A2AHandler:
         content_parts = []
         
         for part in message.parts:
-            if part.kind == "text" and part.text:
-                content_parts.append(part.text)
-            elif part.kind == "file" and hasattr(part, 'data') and part.data:
-                # Handle file upload - decode base64 or direct text
-                try:
-                    # Try to decode as base64
-                    file_content = base64.b64decode(part.data).decode('utf-8')
-                    content_parts.append(file_content)
-                except Exception as decode_error:
-                    logger.warning(f"Failed to decode file as base64: {decode_error}")
-                    # If not base64, treat as plain text
-                    content_parts.append(str(part.data))
-            elif part.kind == "data" and hasattr(part, 'data') and part.data:
-                # Handle data parts
-                if isinstance(part.data, str):
-                    content_parts.append(part.data)
-                elif isinstance(part.data, dict):
-                    content_parts.append(json.dumps(part.data))
+            # Accept any kind value for Telex compatibility
+            if hasattr(part, 'kind'):
+                kind = getattr(part, 'kind', '').lower()
+                
+                if (kind == "text" or kind == "message") and part.text:
+                    content_parts.append(part.text)
+                elif (kind == "file" or kind == "data") and hasattr(part, 'data') and part.data:
+                    # Handle file upload - decode base64 or direct text
+                    try:
+                        if isinstance(part.data, str):
+                            # Try to decode as base64
+                            file_content = base64.b64decode(part.data).decode('utf-8')
+                            content_parts.append(file_content)
+                        else:
+                            # If already dict/object, convert to string
+                            file_content = str(part.data) if not isinstance(part.data, str) else part.data
+                            content_parts.append(file_content)
+                    except Exception as decode_error:
+                        logger.warning(f"Failed to decode file: {decode_error}")
+                        # If not base64, treat as plain text
+                        content_parts.append(str(part.data))
         
         return " ".join(content_parts)
     
