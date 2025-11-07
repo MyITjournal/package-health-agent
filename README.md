@@ -105,7 +105,7 @@ uvicorn main_a2a:app --reload --host 0.0.0.0 --port 8000
 
 ## Live Deployment
 
-**Production URL:** `https://packagehealthmonitoragent-2367cacc569a.herokuapp.com/`
+**Production URL:** `https://packagehealthmonitoragent-2367cacc569a.herokuapp.com/a2a`
 
 **Interactive Docs:** `https://packagehealthmonitoragent-2367cacc569a.herokuapp.com/docs`
 

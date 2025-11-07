@@ -157,3 +157,6 @@ test-results/
 
 # Heroku
 .heroku/
+
+# Log files
+.log
