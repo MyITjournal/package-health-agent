@@ -64,11 +64,18 @@ class A2AHandler:
             )
     
     async def _handle_message_send(self, request: JSONRPCRequest) -> JSONRPCResponse:
+    # NOTE: A2A protocol expects MessagePart.data to be a dict, not a list.
+    # This fix wraps any list in a dict under the 'items' key to avoid 400 errors.
         """Handle message/send method"""
         # Access params directly - now properly typed as MessageParams
         params = request.params
         user_message = params.message
         
+        # Ensure all MessagePart.data are dicts (A2A protocol requires dict, not list)
+        for part in user_message.parts:
+            if hasattr(part, 'data') and isinstance(part.data, list):
+                # Wrap list in a dict under 'items' key
+                part.data = {"items": part.data}
         # Extract user's text from message parts
         user_text = self._extract_text_from_message(user_message)
         logger.info(f"Received message with {len(user_message.parts)} parts")

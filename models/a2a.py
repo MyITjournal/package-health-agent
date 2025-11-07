@@ -9,7 +9,10 @@ class MessagePart(BaseModel):
     
     kind: str  # Accept any string for flexibility with Telex
     text: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
+    # Accept any type for `data` because some A2A/Telex clients send lists or other
+    # shapes (e.g. a list of message parts) instead of a dict. Using Any keeps the
+    # model permissive and avoids Pydantic validation errors for real-world inputs.
+    data: Optional[Any] = None
     file_url: Optional[str] = None
 
 class A2AMessage(BaseModel):
